@@ -1,0 +1,96 @@
+<div id="exercise" class="mainPanel">
+    <div class="container-fluid">
+        <!--Title-->
+        <div class="row">
+            <div class="col-1 align-self-start">
+                <button type="button-sm" class="btn btn-light" onclick='ExerciseHub.startExercise(false)'>Menu</button>
+            </div>
+            <div class="col-10 text-center">
+                <p class="h3" id="exercise-word" onclick="Exercise.wordOnclick(this)">Loading</p>
+            </div>
+            <div class="col-1"></div>
+        </div>
+
+        <!--pronounce-->
+        <div class="row">
+            <div class="btn-group" id="exercise-soundmark-panel" style="height:5vh;">
+                <button type="button-sm" class="btn btn-light">Light</button>
+                <button type="button-sm" class="btn btn-light">Light</button>
+            </div>
+        </div>
+
+        <!--Definition-->
+        <div id="exercise-definition-panel-hide" class="card m-1 p-2" style="height:65vh;" onclick="Exercise.definitionOnclick(this)">
+            <p >Click me to see the word definition</p>
+        </div>
+        <div id="exercise-definition-panel" class="card m-1 p-2" style="height:65vh;" onclick="Exercise.definitionOnclick(this)" hidden=true>
+            <h2>Definition</h2>
+            <div id ="exercise-definition">
+
+            </div>
+            <h2 id ="exercise-note-title">Note</h2>
+            <div id ="exercise-note">
+                
+            </div>
+        </div>
+
+        <!--Answer-->
+        <div class="row text-center">
+            <div class="col-1">
+                <button type="button"
+                        class="btn btn-info my-1 w-100"
+                        onclick="Exercise.nextWord(-1)">&lt;</button>
+            </div>
+            <div class="col-1">
+                <button type="button"
+                        class="btn btn-info my-1 w-100"
+                        onclick="Exercise.nextWord(1)">	&#62;</button>
+            </div>
+            <div class="col-3">
+                <button id="exercise-answer-unknown"
+                        type="button"
+                        class="btn btn-outline-secondary my-1 w-100"
+                        onclick="Exercise.selectAnswer(this)">
+                    Unknown
+                </button>
+            </div>
+            <div class="col-3">
+                <button id="exercise-answer-fuzzy"
+                        type="button"
+                        class="btn btn-outline-warning my-1 w-100"
+                        onclick="Exercise.selectAnswer(this)">
+                    Fuzzy
+                </button>
+            </div>
+            <div class="col-3">
+                <button id="exercise-answer-known"
+                        type="button"
+                        class="btn btn-outline-success my-1 w-100"
+                        onclick="Exercise.selectAnswer(this)">
+                    Known
+                </button>
+            </div>
+        </div>
+
+        <div class="row text-center">
+            <div class="col-12">
+                <button id="exercise-next-word"
+                        type="button"
+                        class="btn btn-light my-1 w-100"
+                        onclick="Exercise.nextWord(1)">
+                    Next word
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<template>
+    <div id="previousWord">word1</div>
+    <div id="currentWord">word2</div>
+    <div id="exercise-button-panel">
+        <button onclick="playWord('hit')">known</button>
+        <button onclick="updataHistory('test')">unknown</button>
+    </div>
+</template>

@@ -1,0 +1,18 @@
+<div id="home" class="mainPanel">
+    <div>
+        <input type="text" class="form-control" id="word_search_box" placeholder="Search word"  
+        oninput="SearchBar.update()">
+    </div>
+    <div class="overflow-auto" style="max-height: 90vh;overflow-y:hidden;">
+        <div id="word_search_results" class="list-group">
+    
+        </div>
+    </div>
+</div>
+
+<template id="individual-word-template">
+    <a onclick="" class="list-group-item list-group-item-action" href="#">
+        <b id="individual-word-spell"></b><br>
+        <font id="individual-word-explaination" size="-2"></font>
+    </a>
+</template>

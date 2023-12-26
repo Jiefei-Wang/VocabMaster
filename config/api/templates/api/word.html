@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{word}}</title>
+</head>
+
+<body>
+    {% for key,value in data.items %}
+    <div class="section">
+        <h4><a href="#" class="section_toggle"></a>  {{ key|title }}:</h4>
+        <pre>{{ value | pprint }}</pre>
+    </div>
+{% endfor %}
+</body>
+
+</html>

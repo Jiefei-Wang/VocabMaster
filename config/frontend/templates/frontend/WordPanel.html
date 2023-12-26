@@ -1,0 +1,103 @@
+<div id="wordPanel" class="mainPanel">
+    <!--Title-->
+    <div class="row">
+        <div class="col-1 d-flex align-items-center">
+            <button type="button" id='back-to-home' class="btn btn-light" onclick="WordPanel.backOnclick()">&lt;</button>
+        </div>
+        <div class="col-lg-9 col-7">
+            <p id='word-head' class="h3 text-center" style="word-wrap: break-word; overflow-wrap: break-word;">hello</p>
+        </div>
+        <div id="glossary-name" class="col-lg-1 col-2 d-flex align-items-center">
+            Book Name
+        </div>
+        <div class="col-lg-1 col-2 d-flex align-items-center">
+            <button type="button" class="btn btn-default" onclick="WordPanel.addOrRemoveWordFromGlossary()">
+                <i id="glossary-star" class="bi-star-fill" style="font-size: 20px;color: rgb(255, 191, 0);"></i>
+            </button>
+        </div>
+    </div>
+
+    <!--pronounce-->
+    <div class="row">
+        <div class="btn-group" id = 'word-soundmarks-panel'>
+        </div>
+    </div>
+
+    <!--Definition-->
+    <div class="container mt-1">
+        <div id='word-definitions-panel'>
+        </div>
+        <br>
+        
+        <!--custom definition-->
+        <div id='word-custom-definition-panel'>
+            <div class="row border border-dark  mt-2 mx-1">
+                <h5 id='word-custom-definition-head'>
+                    Custom definition
+                    <button style="float: right;" data-bs-toggle="modal" data-bs-target="#custom-modal" onclick="WordPanel.editOnclick('definition')">
+                        Edit
+                    </button>
+                </h5>
+                <div id='word-custom-definition' data-type=""></div>
+            </div>
+        </div>
+
+        <!--custom note-->
+        <div id='word-custom-note-panel'>
+            <div class="row border border-dark  mt-2 mx-1">
+                <h5 id='word-custom-note-head'>
+                    Note
+                    <button style="float: right;" data-bs-toggle="modal" data-bs-target="#custom-modal" onclick="WordPanel.editOnclick('note')">
+                        Edit
+                    </button>
+                </h5>
+                <div id='word-custom-note' data-type=""></div>
+            </div>
+        </div>
+    </div>
+    <br><br><br><br>
+</div>
+
+
+<template id='word-definition-template'>
+    <div class="row border border-dark  mt-2 mx-1">
+        <h5 id='source-head-template'>Ecdict</h5>
+        <div id='source-definition-template' data-type="" style="word-wrap: break-word; overflow-wrap: break-word;">Lorem ipsum dolor sit amet, consectetur adipisicing elit...</div>
+    </div>
+</template>
+
+
+
+<template id='word-soundmark-template'>
+    <button type="button" class="btn btn-light" onclick='WordPronounce.playWord(this)'>Light</button>
+</template>
+
+
+<!-- Custom definition Modal -->
+<div class="modal" id="custom-modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Custom Definition</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+          <textarea id='custom-definition-box' class="form-control" placeholder="Please enter your text here." style='min-height:30vh'></textarea>
+        </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+            <button id='custom-confirm-button' type="button" class="btn btn-success" 
+                data-bs-dismiss="modal" onclick="WordPanel.customConfirmOnclick(this)" data-type="">
+                Confirm
+            </button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>

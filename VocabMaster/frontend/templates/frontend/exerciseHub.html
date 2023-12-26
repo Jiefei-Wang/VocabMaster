@@ -1,0 +1,59 @@
+<div id="exerciseHub" class="mainPanel">
+    <div class='card mx-3 px-3'>
+        <div class="d-flex flex-row bd-highlight">
+            <button id='exerciseHub-book-name' type="button" class="btn btn-light" 
+            onclick = 'ExerciseHub.loadBookList()'
+            data-bs-toggle="modal" data-bs-target="#exerciseHub-select-book">Book Name</button>
+        </div>
+        <div id='exerciseHub-book-information-panel' class="d-flex flex-row bd-highlight">
+            <div class="p-2 bd-highlight">Information -- Loading</div>
+        </div>
+        <div class="progress">
+            <div id='exerciseHub-progress' class="progress-bar" role="progressbar" style="width: 20%"></div>
+        </div>
+        <div class="d-flex flex-row-reverse bd-highlight">
+            <button type="button" class="btn btn-light" onclick="ExerciseHub.startExercise(true)">Start</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="exerciseHub-select-book">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Select book</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+            <ul id='exerciseHub-book-list-panel' class="list-group">
+                <li class="list-group"><a href="#">Book list -- Loading</a></li>
+            </ul>
+        </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
+
+<template id="exerciseHub-information-template">
+    <div class="p-2 bd-highlight">Information</div>
+</template>
+
+
+<template id="exerciseHub-book-template">
+    <button type="button" class="btn btn-light w-100" onclick="ExerciseHub.setBook(this)" data-bs-dismiss="modal">
+        Inbox
+    </button>
+</template>
+
+

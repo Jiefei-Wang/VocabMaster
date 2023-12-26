@@ -1,0 +1,108 @@
+<div id="exercise" class="mainPanel">
+    <div class="container-fluid">
+        <!--Title-->
+        <div class="row">
+            <div class="col-1 align-self-start">
+                <button type="button-sm" class="btn btn-light" onclick='ExerciseHub.startExercise(false)'>Menu</button>
+            </div>
+            <div class="col-10 text-center">
+                <p class="h3" id="exercise-word" onclick="Exercise.wordOnclick(this)" style="font-size: 300%;">Loading</p>
+            </div>
+            <div class="col-1"></div>
+        </div>
+
+        <!--pronounce-->
+        <div class="row">
+            <div class="btn-group" id="exercise-soundmark-panel" style="height:5vh;">
+                <button type="button-sm" class="btn btn-light">Light</button>
+                <button type="button-sm" class="btn btn-light">Light</button>
+            </div>
+        </div>
+
+        <!--Definition-->
+        <div id="exercise-definition-panel-hide" class="card m-1 p-2" style="height:40vh;" 
+          data-type="noDefinition" onclick="Exercise.definitionOnclick(this)">
+            <p >Click me to see the word definition</p>
+        </div>
+        <div id="exercise-definition-panel" class="card m-1 p-2" style="height:40vh;" 
+          data-type="definition" onclick="Exercise.definitionOnclick(this)" hidden=true>
+            <div id ="exercise-definition">
+
+            </div>
+            <br>
+            <br>
+            <h3 id ="exercise-note-title">Note</h3>
+            <div id ="exercise-note">
+                
+            </div>
+        </div>
+
+        <!--Answer-->
+        <div class="row text-center">
+            <div class="col-1">
+                <button type="button"
+                        class="btn btn-info my-0 w-100 text-center"
+                        onclick="Exercise.nextWord(-1)">&lt;</button>
+            </div>
+            <div class="col-1">
+                <button type="button"
+                        class="btn btn-info my-0 w-100 text-center"
+                        onclick="Exercise.nextWord(1)">	&#62;</button>
+            </div>
+            
+            <div class="col-10">
+                <div class="row">
+                    <div class="btn-group" role="group">
+                        <button id="exercise-answer-unknown"
+                                type="button"
+                                class="btn btn-outline-secondary text-center  w-100"
+                                onclick="Exercise.selectAnswer(this)",
+                                style="margin-right: 5px;"
+                                data-answer="unknown">
+                            Unknown
+                        </button>
+                        <button id="exercise-answer-fuzzy"
+                                type="button"
+                                class="btn btn-outline-warning text-center  w-100"
+                                onclick="Exercise.selectAnswer(this)",
+                                style="margin-right: 5px;"
+                                data-answer="fuzzy">
+                            Fuzzy
+                        </button>
+                        <button id="exercise-answer-known"
+                                type="button"
+                                class="btn btn-outline-success text-center  w-100"
+                                onclick="Exercise.selectAnswer(this)"
+                                data-answer="known">
+                            Known
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <!--Message hub-->
+        <div class="row border">
+            <div class="col-4 border" id='exercise-learning-time'>
+                Learning Time: 
+            </div>
+            <div class="col-4 border" id='exercise-review-words'>
+                Review words: 
+            </div>
+            <div class="col-4 border" id='exercise-retention-prob'>
+                Retention prob: 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<template>
+    <div id="previousWord">word1</div>
+    <div id="currentWord">word2</div>
+    <div id="exercise-button-panel">
+        <button onclick="playWord('hit')">known</button>
+        <button onclick="updataHistory('test')">unknown</button>
+    </div>
+</template>
