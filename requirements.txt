@@ -3,11 +3,11 @@ python-dotenv
 django-extensions
 django-crispy-forms
 crispy-bootstrap5
-psycopg2
+psycopg2-binary
 scikit-learn
 requests
 langid
 gtts
--e git+https://github.com/yeahwhat-mc/goslate#egg=goslate
 PyDictionary
 pandas
+translators

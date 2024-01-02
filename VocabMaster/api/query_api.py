@@ -46,8 +46,10 @@ def formatUserInfo(user):
         'glossaryBook': glossaryBookName,
         'exerciseBook': exerciseBookName,
         'language': obj.language,
-        'searchSource': obj.searchSource,
+        'searchSources': obj.searchSources.split(","),
         'definitionSources': obj.definitionSources.split(","),
+        'primaryLanguage': obj.primaryLanguage,
+        'searchLanguage': obj.searchLanguage
     }
         
     return data

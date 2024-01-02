@@ -5,6 +5,7 @@ urlpatterns = [
     path('jsonApi', views.jsonApi),
     path('<slug:word>', views.index),
     path('<slug:word>/', views.index),
-    path('pronounce/<slug:region>/<slug:word>', views.pronounce),
-    path('history', views.History),
+    path('pronounce/<slug:region>/<slug:word>', views.pronounce)
 ]
+
+

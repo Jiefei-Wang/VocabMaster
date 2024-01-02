@@ -23,31 +23,68 @@ from .query_api import getPronounce,searchWords,\
     addOrUpdateExerciseAnswer,\
     getUserInfo
 
+import logging
 logger = logging.getLogger("mylogger")
 #####################################################
 # View
 #####################################################
 
-def jsonApi(request):
-    #JsonResponse(data)
-    if request.method != 'POST':
-        return HttpResponseNotFound("Only POST request is allowed")
-    
+def getUserName(request):
     is_authenticated = request.user.is_authenticated
     if is_authenticated:
         user = request.user.get_username()
     else:
         user = None
-    userInfo = getUserInfo(user)
-    searchSource = userInfo['searchSource']
-    definitionSources = userInfo['definitionSources']
-    language = userInfo['language']
-    exerciseBook = userInfo['exerciseBook']
-    glossaryBook = userInfo['glossaryBook']
-    
-    
+    return user
+
+# def userInfo(user):
+#     userInfo = 
+#     searchSource = userInfo['searchSource']
+#     definitionSources = userInfo['definitionSources']
+#     language = userInfo['language']
+#     exerciseBook = userInfo['exerciseBook']
+#     glossaryBook = userInfo['glossaryBook']
+
+def jsonPreprocess(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
+    body['user'] = getUserName(request)
+    
+    ## Get user preferences
+    userInfo = getUserInfo(body['user'])
+    body['preference'] = userInfo
+    return body
+
+## Search a single word
+## input: 
+## word: the word to search
+## output:
+## data: a dictionary containing the search result
+## data['searchedWord']: the word to search
+## data['words']: a list of words as the search result
+## data['definitions']: a list of definitions corresponding to the words
+def searchApi(request):
+    if request.method != 'GET':
+        return HttpResponseNotFound("Only GET request is allowed")
+    body = jsonPreprocess(request)
+    word = body['word']
+    searchSources = body['preference']['searchSources']
+    language = body['preference']['language']
+    primaryLanguage = body['preference']['primaryLanguage']
+    searchLanguage = body['preference']['searchLanguage']
+    
+    data = searchWords(word, searchSources, primaryLanguage, searchLanguage, limits=100)
+    data['searchedWord'] = word
+    data['source'] = searchSources
+    logger.info(f'Search API returns Data: {data}')
+    return JsonResponse(data)
+
+def jsonApi(request):
+    #JsonResponse(data)
+    if request.method != 'POST':
+        return HttpResponseNotFound("Only POST request is allowed")
+    body = jsonPreprocess(request)
+
     print(body)
     action = body['action']
     if 'word' in body:
