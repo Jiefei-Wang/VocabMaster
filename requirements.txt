@@ -11,3 +11,5 @@ gtts
 PyDictionary
 pandas
 translators
+hashlib
+base64

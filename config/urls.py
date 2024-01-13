@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("VocabMaster.frontend.urls")),
     path("api/", include("VocabMaster.api.urls")),
+    path("dictapi/", include("VocabMaster.dictionary.urls")),
     path('accounts/', include('django.contrib.auth.urls')),
     path("register", views.register_request, name="register"),
     path("login", views.login_request, name="login"), 

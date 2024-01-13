@@ -36,16 +36,32 @@ class WordScore(models.Model):
         ordering = ['-score']
 
 
+class WordSoundMark(models.Model):
+    word = models.CharField(max_length=1000)
+    region = models.CharField(max_length=100, null=True)
+    soundmark = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return f'{self.word} -- region: {self.region} soundmark: {self.soundmark}'
+    class Meta:
+        indexes = [
+            models.Index(fields=['word', 'region'], name='WordSoundMark_word_region'),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=['word','region'], name='WordSoundMark_unique'),
+        ]
 
 class WordPronounce(models.Model):
     word = models.CharField(max_length=1000)
-    source = models.CharField(max_length=100)
-    region = models.CharField(max_length=100, null=True)
-    soundmark = models.CharField(max_length=100, null=True)
+    region = models.CharField(max_length=100)
+    pronounce = models.BinaryField()
     
     def __str__(self):
-        return f'{self.word} -- source: {self.source} region: {self.region} soundmark: {self.soundmark}'
+        return f'{self.word} -- region: {self.region} pronounce size: {len(self.pronounce)}'
     class Meta:
         indexes = [
-            models.Index(fields=['word'], name='WordPronounce_word_idx'),
+            models.Index(fields=['word', 'region'], name='WordPronounce_word_region'),
+        ]
+        constraints = [
+            models.UniqueConstraint(fields=['word','region'], name='WordPronounce_unique'),
         ]

@@ -186,13 +186,13 @@ class UserInfo(models.Model):
     ## Determine the search order of the sources
     searchSources = models.CharField(max_length=100)
     ## What is the language displayed in the search results?
-    searchLanguage = models.CharField(max_length=10)
+    displayLanguage = models.CharField(max_length=10)
     ## What is user's primary language?
     primaryLanguage = models.CharField(max_length=10)
     ## The sources used in displaying definitions in word details
     definitionSources = models.CharField(max_length=1000)
     
-    allAttributes = ['user', 'glossaryBook', 'exerciseBook', 'searchSources', 'searchLanguage', 'primaryLanguage', 'definitionSources']
+    allAttributes = ['user', 'glossaryBook', 'exerciseBook', 'searchSources', 'displayLanguage', 'primaryLanguage', 'definitionSources']
     listAttributes = ['searchSources', 'definitionSources']
 
     @classmethod
@@ -236,7 +236,7 @@ class UserInfo(models.Model):
             'exerciseBook': 'mybook',
             'searchSources': [Dictionaries.ecdict],
             'primaryLanguage': Language.zh,
-            'searchLanguage': Language.zh,
+            'displayLanguage': Language.zh,
             'definitionSources': [Dictionaries.ecdict, Dictionaries.google]
         }
         return defaultUserValue

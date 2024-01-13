@@ -31,28 +31,6 @@ def formatSoundmark(word, region):
     obj = getPronouncesDB(word=word, region=region).first()
     return obj.soundmark
 
-def formatUserInfo(user):
-    if user!=None:
-        obj = getUserInfoDB(user)
-        glossaryBookName = obj.glossaryBook.bookName
-        exerciseBookName = obj.exerciseBook.bookName
-    else:
-        obj = defaultUserValue
-        glossaryBookName = defaultUserValue.glossaryBookName
-        exerciseBookName = defaultUserValue.exerciseBook
-        
-    data={
-        'user': user,
-        'glossaryBook': glossaryBookName,
-        'exerciseBook': exerciseBookName,
-        'language': obj.language,
-        'searchSources': obj.searchSources.split(","),
-        'definitionSources': obj.definitionSources.split(","),
-        'primaryLanguage': obj.primaryLanguage,
-        'searchLanguage': obj.searchLanguage
-    }
-        
-    return data
 
 #####################################################
 # Exported functions
@@ -88,7 +66,7 @@ def queryWordsDefinitions(words, language, sources):
         data[key] = []
     
     for word in words:
-        res = queryWordDefinitions(word, language, sources)
+        res = getWordDefinitions(word, language, sources)
         data['words'].append(word)
         for key in sources:
             data[key].append(res[key])
@@ -96,7 +74,7 @@ def queryWordsDefinitions(words, language, sources):
     
 ## Return:
 ## {source1 : defintion, source2: definition, ...}
-def queryWordDefinitions(word, language, sources):
+def getWordDefinitions(word, language, sources):
     if not isinstance(sources,list):
         sources = [sources]
     updateWordDatabase(word, language, sources)
@@ -220,23 +198,6 @@ def addUserInfo(user, bookName = defaultUserValue.glossaryBookName):
     if not existUserInfo(user):
         addUserInfoDB(user, bookName)
         
-def getUserInfo(user):
-    if user!=None:
-        addUserInfo(user, defaultUserValue.glossaryBookName)
-        userBooks = getGlossaryBooksDB(user=user)
-        if len(userBooks)==0:
-            addGlossaryBook(user, defaultUserValue.glossaryBookName)
-            userBooks = getGlossaryBooksDB(user=user)
-            
-        obj = getUserInfoDB(user)
-        if obj.glossaryBook==None:
-            obj.glossaryBook = userBooks[0]
-            obj.save()
-        if obj.exerciseBook==None:
-            obj.exerciseBook = userBooks[0]
-            obj.save()
-    return formatUserInfo(user)
-
 def existUserInfo(user):
     return existUserInfoDB(user)
 
@@ -283,7 +244,7 @@ def queryNextExerciseWords(user, bookName, language, source, n=2):
     # Query definition
     data = queryWordsDefinitions(prediction.word, language = language, sources = source)
     data[source] = [definition if definition != None \
-        else queryWordDefinitions(word, language = language, sources = Source.google)[Source.google][0] \
+        else getWordDefinitions(word, language = language, sources = Source.google)[Source.google][0] \
             for word, definition in zip(prediction.word,data[source])]
     
     # Query custom definition

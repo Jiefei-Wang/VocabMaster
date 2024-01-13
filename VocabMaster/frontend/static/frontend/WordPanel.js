@@ -109,8 +109,8 @@ class WordPanel {
         WordPanel.workingOn = word;
         
         // Get the word definition
-        API.queryWordDefinitions(WordPanel.wordDefinitionsCallback, word);
-
+        API.getWordDefinitions(WordPanel.wordDefinitionsCallback, word);
+        return;
         // Get custom definition
         WordPanel.cleanAnnotation();
         if (UserInfo.is_authenticated()) {
@@ -134,8 +134,9 @@ class WordPanel {
             return;
         }
         var jsonResponse = JSON.parse(req.responseText);
-        var word = jsonResponse['word'];
+        var word = jsonResponse['searchedWord'];
         var sources = jsonResponse['sources'];
+        var definitions = jsonResponse['definitions'];
         if (WordPanel.workingOn!=word)
             return;
 
@@ -143,7 +144,8 @@ class WordPanel {
         wordPanel.innerHTML='';
         for(var i=0;i<sources.length;i++){
             var source = sources[i];
-            var obj = WordPanel.createWordDetailElement(source, jsonResponse[source]);
+            var definition = definitions[i];
+            var obj = WordPanel.createWordDetailElement(source, definition);
             wordPanel.append(obj);
         }
     }

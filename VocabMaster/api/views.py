@@ -1,10 +1,8 @@
 
 from django.http.response import JsonResponse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest,HttpResponseForbidden
-from django.forms.models import model_to_dict
 from django.shortcuts import render
 
-import json 
 import time
 import json
 import logging
@@ -14,28 +12,19 @@ from .keys import *
 from .models import *
 from .query_api import getPronounce,searchWords,\
     updateWordAnnotation,getWordAnnotation,\
-    queryWordDefinitions, getSoundmarks,\
+    getWordDefinitions, getSoundmarks,\
     addGlossaryBook, deleteGlossaryBook, getGlossaryBooks, setDefaultGlossaryBook,\
     addGlossaryWord, deleteGlossaryWord, queryGlossaryWords,\
     existGlossaryBook, existGlossaryWord, getGlossaryBookFromWord,\
     setExerciseBook, getExerciseBookInformation, \
     queryNextExerciseWords,\
-    addOrUpdateExerciseAnswer,\
-    getUserInfo
+    addOrUpdateExerciseAnswer
 
 import logging
 logger = logging.getLogger("mylogger")
 #####################################################
 # View
 #####################################################
-
-def getUserName(request):
-    is_authenticated = request.user.is_authenticated
-    if is_authenticated:
-        user = request.user.get_username()
-    else:
-        user = None
-    return user
 
 # def userInfo(user):
 #     userInfo = 
@@ -45,39 +34,8 @@ def getUserName(request):
 #     exerciseBook = userInfo['exerciseBook']
 #     glossaryBook = userInfo['glossaryBook']
 
-def jsonPreprocess(request):
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
-    body['user'] = getUserName(request)
-    
-    ## Get user preferences
-    userInfo = getUserInfo(body['user'])
-    body['preference'] = userInfo
-    return body
 
-## Search a single word
-## input: 
-## word: the word to search
-## output:
-## data: a dictionary containing the search result
-## data['searchedWord']: the word to search
-## data['words']: a list of words as the search result
-## data['definitions']: a list of definitions corresponding to the words
-def searchApi(request):
-    if request.method != 'GET':
-        return HttpResponseNotFound("Only GET request is allowed")
-    body = jsonPreprocess(request)
-    word = body['word']
-    searchSources = body['preference']['searchSources']
-    language = body['preference']['language']
-    primaryLanguage = body['preference']['primaryLanguage']
-    searchLanguage = body['preference']['searchLanguage']
-    
-    data = searchWords(word, searchSources, primaryLanguage, searchLanguage, limits=100)
-    data['searchedWord'] = word
-    data['source'] = searchSources
-    logger.info(f'Search API returns Data: {data}')
-    return JsonResponse(data)
+
 
 def jsonApi(request):
     #JsonResponse(data)
@@ -101,15 +59,9 @@ def jsonApi(request):
     
     logger.info(f'JSON api GET -- user: {request.user} operation: {body}')
     
-    # Return a list of words with their explainations
-    if action == "search":
-        data = searchWords(word, searchSource, language, limits=100)
-        data['searchedWord'] = word
-        data['source'] = searchSource
-        return JsonResponse(data)
     
-    if action == 'queryWordDefinitions':
-        data = queryWordDefinitions(word, language, definitionSources)
+    if action == 'getWordDefinitions':
+        data = getWordDefinitions(word, language, definitionSources)
         data['word'] = word
         data['sources'] = definitionSources
         return JsonResponse(data)
@@ -224,7 +176,7 @@ def index(request, word):
     if request.method != 'GET':
         return HttpResponseBadRequest("Only GET request is allowed")
         
-    data = queryWordDefinitions(word)
+    data = getWordDefinitions(word)
     logger.info(f'Word: {word}, Data: {data}')
     return render(request, "api/word.html", {"data":data, "word": word})
 

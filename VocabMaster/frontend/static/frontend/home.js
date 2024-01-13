@@ -1,5 +1,7 @@
 class SearchBar {
     static displayedWord = '';
+    // The word that is currently being searched
+    // If received a response with a word that is different from this, the response will be ignored
     static searchingWord = '';
     static resultsList;
 
@@ -13,6 +15,7 @@ class SearchBar {
     static update(){
         var resultsList = this.getSearchResultElement();
         const word = this.getSearchBoxElement().value;
+        // If the word is empty, clear the results
         if (word.length ==0) {
             resultsList.innerHTML = '';
             this.displayedWord='';
@@ -40,8 +43,7 @@ class SearchBar {
         var jsonResponse = JSON.parse(req.responseText);
         var searchedWord = jsonResponse['searchedWord'];
         var wordslist = jsonResponse['words'];
-        var source = jsonResponse['source'];
-        var definitions = jsonResponse[source];
+        var definitions = jsonResponse['definitions'];
 
         var resultsList = SearchBar.getSearchResultElement();
         if (searchedWord == SearchBar.searchingWord ) {

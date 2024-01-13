@@ -1,4 +1,7 @@
 
+## This file contains the JSON API for the dictionary
+## All requests will be directed to a function in this file
+
 ## pronounciation
 from gtts import gTTS
 
@@ -9,39 +12,45 @@ from .models import *
 from .dictionaries import Dictionaries
 from ..utils.utils import detect_lang
 from ..utils.constants import Language
-## constrain language
 
 
-# word = "test"
-# primaryLanguage = Language.zh
-# searchLanguage = Language.zh
-# searchSources = [Dictionaries.google]
-# limits = 10
+## Return a list of words
+def getEngWordsList(word, limits = 10):
+    candidates = WordScore.objects.filter(word__istartswith=word).order_by("-score")[:limits]
+    words = [i.word for i in candidates]
+    return words
+
+## Return a list of words
+def getNonEngWordsList(word, searchSources, limits = 10):
+    words = set()
+    for source in searchSources:
+        candidates = WordDefinition.objects.filter(word__istartswith=word, source = source).order_by(Length('word').asc())[:limits]
+        words = words.union(set([i.word for i in candidates]))
+        if len(words)>=limits:
+            break
+    ## sort the words by length
+    words = sorted(list(words), key=len)[:limits]
+    return words
 
 ## search words from database and return the definitions
 ## of the matched words
 # Return:
 # {words : [...], definitions : [...]}
-def searchWords(word, searchSources, primaryLanguage, searchLanguage, limits = 10):
+def searchWords(word, sources, fromLanguage, toLanguage, limits = 10):
     ## Cases:
     ## word is English: to search language
     ## word is non-English: to English
     ##模糊搜索django数据库
-    fromLanguage = detect_lang(word, primaryLanguage)
     if fromLanguage == Language.en:
         words = getEngWordsList(word, limits)
-        ## English to whatever user want to translate to
-        toLanguage = searchLanguage
     else:
-        words = getNonEngWordsList(word, searchSources, limits)
-        ## non-English to english
-        toLanguage = Language.en
+        words = getNonEngWordsList(word, sources, limits)
     
     ## query the definitions from the dictionary ordered by the searchSources
     ## if the word can be found in multiple dictionaries, use the first one
     wordsDefinitions = {word: None for word in words}
     remainingWords = set(words)
-    for source in searchSources:
+    for source in sources:
         sourceDict = Dictionaries[source]
 
         result = [sourceDict.getWordMeaning(source, word, fromLanguage, toLanguage) for word in remainingWords]
@@ -66,25 +75,21 @@ def searchWords(word, searchSources, primaryLanguage, searchLanguage, limits = 1
     return {'words': words, 'definitions': definitions}
 
 
-## Return a list of words
-def getEngWordsList(word, limits = 10):
-    candidates = WordScore.objects.filter(word__istartswith=word).order_by("-score")[:limits]
-    words = [i.word for i in candidates]
-    return words
-
-## Return a list of words
-def getNonEngWordsList(word, searchSources, limits = 10):
-    words = set()
-    for source in searchSources:
-        candidates = WordDefinition.objects.filter(word__istartswith=word, source = source).order_by(Length('word').asc())[:limits]
-        words = words.union(set([i.word for i in candidates]))
-        if len(words)>=limits:
-            break
-    ## sort the words by length
-    words = sorted(list(words), key=len)[:limits]
-    return words
 
 
+## given a word, return its definition from different sources
+## Return: {sources: [...], definitions: [...]}
+def getWordDefinition(word, sources, fromLanguage, toLanguage):
+    definitions = []
+    for source in sources:
+        sourceDict = Dictionaries[source]
+        definition = sourceDict.getWordMeaning(source, word, fromLanguage, toLanguage)
+        definitions.append(definition)
+    ## remove None in sources
+    sources = [source for source, definition in zip(sources, definitions) if definition!=None]
+    definitions = [definition for definition in definitions if definition!=None]
+    return {'sources': sources, 'definitions': definitions}
+    
 
 
 

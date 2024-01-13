@@ -24,7 +24,7 @@ class Panels{
 }
 
 window.onload = function () {
-    UserInfo.updateUserInfo();
+    //UserInfo.updateUserInfo();
     showPanel('home');
 }
 

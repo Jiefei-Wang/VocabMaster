@@ -14,11 +14,15 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 
 class requestUtils{
-    static apiRequestTemplate(async=true){
+    static apiRequestTemplate(endpoint, async=true){
         let req = new XMLHttpRequest();
-        req.open('POST', baseUrl + 'api/jsonApi',async);
+        req.open("POST", baseUrl + endpoint,async);
         req.setRequestHeader('Accept', 'application/json');
         req.setRequestHeader('Content-Type', 'application/json');
         const csrftoken = getCookie('csrftoken');
@@ -26,9 +30,9 @@ class requestUtils{
         return req;
     }
     
-    static jsonRequest(obj, callback = null, async = true){
+    static jsonRequest(obj, endpoint, callback = null, async = true){
         var obj_json = JSON.stringify(obj)
-        var req = requestUtils.apiRequestTemplate();
+        var req = requestUtils.apiRequestTemplate(endpoint);
         req.onload = ()=>{
             callback(req);
         };
@@ -48,15 +52,15 @@ class component{
     static wordItem(word, definition, backId){
         const template = document.getElementById('individual-word-template');
         var a = template.content.firstElementChild.cloneNode(true);
-        a.setAttribute('onclick', "component.wordItemOnclick(this)");
+        a.setAttribute('onclick', 'component.wordItemOnclick(this)');
         a.dataset.id = backId;
         a.dataset.word = word;
 
 
-        var word_spell = a.querySelector("#individual-word-spell");
+        var word_spell = a.querySelector('#individual-word-spell');
         word_spell.innerText = word;
 
-        var explain = a.querySelector("#individual-word-explaination");
+        var explain = a.querySelector('#individual-word-explaination');
         explain.innerText = definition;
 
         return(a);
@@ -64,6 +68,14 @@ class component{
     static wordItemOnclick(obj){
         WordPanel.backWindowId=obj.dataset.id;
         WordPanel.showWord(obj.dataset.word);
+    }
+
+    static getNavigationBar(){
+        return document.getElementById('navigation-bar');
+    }
+
+    static getSpinner(){
+        return document.getElementById('loading-spinner');
     }
 }
 
@@ -77,7 +89,7 @@ class UserInfo{
 
     static isLoading = false;
     static is_authenticated(){
-        return document.getElementById("is_authenticated").value == "True";
+        return document.getElementById('is_authenticated').value == 'True';
     }
 
     static updateUserInfo(){
@@ -186,19 +198,16 @@ class WordPronounce{
 class API{
     static searchWord(callback, word){
         var jsonRequest = {
-            'action' : 'search',
             'word' :  word
         };
-        
-        requestUtils.jsonRequest(jsonRequest, callback)
+        requestUtils.jsonRequest(jsonRequest,'dictapi/search', callback);
     }
 
-    static queryWordDefinitions(callback, word){
+    static getWordDefinitions(callback, word){
         var jsonRequest = {
-            'action' : 'queryWordDefinitions',
             'word' :  word
         };
-        requestUtils.jsonRequest(jsonRequest, callback);
+        requestUtils.jsonRequest(jsonRequest, 'dictapi/wordDefinition', callback);
     }
 
     static getWordAnnotation(callback,word, type){
@@ -350,4 +359,3 @@ class API{
     }
     
 }
-
