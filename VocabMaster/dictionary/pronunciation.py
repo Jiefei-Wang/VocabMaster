@@ -12,7 +12,10 @@ from .models import WordSoundMark, WordPronounce
 
 # tts = gTTS("test", lang='en', tld='co.uk')
 
+
+
 class Pronounciation():
+    regions = ['UK', 'US']
     ## Return: {region: soundmark}
     @classmethod
     def getSoundmarks(cls, word):

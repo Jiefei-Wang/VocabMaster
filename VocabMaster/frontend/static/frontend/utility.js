@@ -124,73 +124,96 @@ class UserInfo{
 
 class WordPronounce{
     static loading = {};
+    static loadingTimeout = 5000;
     static audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    static isLoading(word,region){
-        var status = WordPronounce.loading[word+region];
-        if(status == undefined){
+    
+    static getHubKey(region){
+        return region + '---pronounce';
+    }
+
+    static getKey(word, region){
+        return word + '---' + region;
+    }
+
+    static isLoading(word, region){
+        const key = WordPronounce.getKey(word, region);
+        if(!WordPronounce.loading.hasOwnProperty(key)){
             return false;
+        }else{
+            return performance.now() - WordPronounce.loading[key] < WordPronounce.loadingTimeout;
         }
-        return status
     }
+
     static setLoadingStatus(word, region, isLoading){
-        WordPronounce.loading[word+region] = isLoading;
+        const key = WordPronounce.getKey(word, region);
+        if (isLoading){
+            WordPronounce.loading[key] = performance.now();
+        }else{
+            delete WordPronounce.loading[key];
+        }
     }
 
+    // When user click the button, this function will be called
     static playWord(buttonDOM){
-        var word = buttonDOM.dataset.word;
-        var region = buttonDOM.dataset.region;
-        WordPronounce.pronounce(word,region);
-    }
-    static pronounce(word, region){
-        if (!wordInfoHub.exists(word, region + '-pronounce')){
+        const word = buttonDOM.dataset.word;
+        const region = buttonDOM.dataset.region;
+        const dataKey = WordPronounce.getHubKey(region);
+        if (!wordInfoHub.exists(word, dataKey)){
             WordPronounce.loadPronounce(word, region);
+        }else{
+            WordPronounce.pronounce(word, region);
         }
-        if (WordPronounce.isLoading(word, region)){
-            return setTimeout(()=>{return WordPronounce.pronounce(word, region)}, 100);
-        }
+    }
 
-        var decodedString = wordInfoHub.get(word,region + '-pronounce');
+    static pronounce(word, region){
+        const dataKey = WordPronounce.getHubKey(region);
+        var decodedString = wordInfoHub.get(word, dataKey);
         const decodedBytes = new Uint8Array(decodedString.split('').map(char => char.charCodeAt(0)));
         var audioSource = WordPronounce.audioCtx.createBufferSource();
-        WordPronounce.audioCtx.decodeAudioData(decodedBytes.buffer, (buffer) => {
+        WordPronounce.audioCtx.decodeAudioData(decodedBytes.buffer, 
+            (buffer) => {
             audioSource.buffer = buffer;
             audioSource.connect(WordPronounce.audioCtx.destination);
             },
-      
-            (err) => console.error(`Error with decoding audio data: ${err.err}`));
+            (err) => console.error(`Error with decoding audio data: ${err.err}`)
+        );
     
-            // connect the AudioBufferSourceNode to the
-            // destination so we can hear the sound
-            audioSource.connect(WordPronounce.audioCtx.destination);
-    
-            // start the source playing
-            audioSource.start();
+        // connect the AudioBufferSourceNode to the
+        // destination so we can hear the sound
+        audioSource.connect(WordPronounce.audioCtx.destination);
+
+        // start the source playing
+        audioSource.start();
     }
 
+    // Load and then pronounce the word
     static loadPronounce(word, region){
         if (WordPronounce.isLoading(word, region)){
             return;
         }
         WordPronounce.setLoadingStatus(word, region, true);
-        var jsonRequest = {
-            'action' : 'get',
-            'target' :  'pronounce',
-            'word' : word,
-            'region': region
-        };
-        requestUtils.jsonRequest(jsonRequest, (req)=>{WordPronounce.loadPronounceCallback(req, word, region)});
+        API.getWordPronounce(
+            (req)=>{
+                WordPronounce.setLoadingStatus(word, region, false);
+                const isOk = WordPronounce.loadPronounceCallback(req, word, region);
+                if (isOk){
+                    WordPronounce.pronounce(word, region);
+                }
+            }, 
+            word, region);
     }
 
     static loadPronounceCallback(req, word, region){
-        WordPronounce.setLoadingStatus(word, region, false);
         if(requestUtils.handleRequestError(req)){
-            return;
+            return false;
         }
         var jsonResponse = JSON.parse(req.responseText);
         const data = jsonResponse['data'];
 
         const decodedString = atob(data);
-        wordInfoHub.set(word, region + '-pronounce', decodedString);
+        const dataKey = WordPronounce.getHubKey(region);
+        wordInfoHub.set(word, dataKey, decodedString);
+        return true;
     }
 }
 
@@ -231,12 +254,19 @@ class API{
         requestUtils.jsonRequest(jsonRequest, callback);
     }
 
-    static queryWordSoundmarks(callback, word){
+    static getWordSoundmarks(callback, word){
         var jsonRequest = {
-            'action' : 'queryWordSoundmarks',
             'word' :  word
         };
-        requestUtils.jsonRequest(jsonRequest, callback);
+        requestUtils.jsonRequest(jsonRequest, 'dictapi/wordSoundmarks', callback);
+    }
+
+    static getWordPronounce(callback, word, region){
+        var jsonRequest = {
+            'word' :  word,
+            'region': region
+        };
+        requestUtils.jsonRequest(jsonRequest, 'dictapi/wordPronounce', callback);
     }
 
     static findBookByWord(callback, word){

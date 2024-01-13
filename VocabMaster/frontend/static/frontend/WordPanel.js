@@ -110,6 +110,10 @@ class WordPanel {
         
         // Get the word definition
         API.getWordDefinitions(WordPanel.wordDefinitionsCallback, word);
+        
+        // Get the word soundmark
+        API.getWordSoundmarks(WordPanel.wordSoundMarkCallback, word);
+
         return;
         // Get custom definition
         WordPanel.cleanAnnotation();
@@ -118,8 +122,6 @@ class WordPanel {
             API.getWordAnnotation(WordPanel.wordAnnotationCallback, word, Keys.customNote);
         }
 
-        // Get the word soundmark
-        API.queryWordSoundmarks(WordPanel.wordSoundMarkCallback, word);
 
         if (UserInfo.is_authenticated()){
             // Check if the word has been added into a glossary book
@@ -177,6 +179,7 @@ class WordPanel {
         if (WordPanel.workingOn!=word)
             return;
 
+        // add soundmark elements to the panel
         var soundmarksPanel = WordPanel.getWordSoundmarksPanelElement();
         soundmarksPanel.innerHTML='';
         for(var i=0;i<Keys.soundMarkRegions.length;i++){
