@@ -114,13 +114,18 @@ class WordPanel {
         // Get the word soundmark
         API.getWordSoundmarks(WordPanel.wordSoundMarkCallback, word);
 
-        return;
         // Get custom definition
         WordPanel.cleanAnnotation();
         if (UserInfo.is_authenticated()) {
-            API.getWordAnnotation(WordPanel.wordAnnotationCallback, word, Keys.customDefinition);
-            API.getWordAnnotation(WordPanel.wordAnnotationCallback, word, Keys.customNote);
+            API.getWordAnnotation((req)=>{
+                WordPanel.wordAnnotationCallback(req, Keys.customDefinition);
+            }, word, Keys.customDefinition);
+
+            API.getWordAnnotation((req)=>{
+                WordPanel.wordAnnotationCallback(req, Keys.customNote);
+            }, word, Keys.customNote);
         }
+        return;
 
 
         if (UserInfo.is_authenticated()){
@@ -153,14 +158,13 @@ class WordPanel {
     }
 
     
-    static wordAnnotationCallback(req){
+    static wordAnnotationCallback(req, type){
         if(requestUtils.handleRequestError(req)){
             return;
         }
         var jsonResponse = JSON.parse(req.responseText);
         var word = jsonResponse['word'];
         var data = jsonResponse['data'];
-        var type = jsonResponse['type'];
         if (WordPanel.workingOn!=word)
             return;
 
@@ -268,7 +272,7 @@ class WordPanel {
             WordPanel.backWindowId = null;
         }
     }
-
+    // Word annotation
     static editOnclick(type){
         if(!UserInfo.is_authenticated()){
             return;
@@ -282,6 +286,7 @@ class WordPanel {
         confirmButton.dataset.type = type;
     }
 
+    // Confirm editing annotation
     static customConfirmOnclick(buttonDOM){
         if(!UserInfo.is_authenticated()){
             return;
@@ -292,7 +297,7 @@ class WordPanel {
 
         var textDOM = WordPanel.getAnnotationTextElement(type);
         textDOM.innerText = meaning;
-        API.updateWordAnnotation((req)=>{
+        API.setWordAnnotation((req)=>{
             if(requestUtils.handleRequestError(req)){
                 return;
             }

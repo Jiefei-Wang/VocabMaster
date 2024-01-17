@@ -233,25 +233,20 @@ class API{
         requestUtils.jsonRequest(jsonRequest, 'dictapi/wordDefinition', callback);
     }
 
-    static getWordAnnotation(callback,word, type){
+    static getWordAnnotation(callback, word, type){
         var jsonRequest = {
-            'target': 'wordAnnotation',
-            'action' : 'get',
-            'word' :  word,
-            'type': type
+            'type' : type,
+            'word' :  word
         };
-        requestUtils.jsonRequest(jsonRequest, callback);
-
+        requestUtils.jsonRequest(jsonRequest, 'user/getUserDefinedData', callback);
     }
-    static updateWordAnnotation(callback, word, type, data){
+    static setWordAnnotation(callback, word, type, data){
         var jsonRequest = {
-            'target': 'wordAnnotation',
-            'action' : 'update',
             'word' :  word,
             'type': type,
             'data': data
         };
-        requestUtils.jsonRequest(jsonRequest, callback);
+        requestUtils.jsonRequest(jsonRequest, 'user/setUserDefinedData', callback);
     }
 
     static getWordSoundmarks(callback, word){

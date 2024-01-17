@@ -98,62 +98,56 @@ class GlossaryWordsTestCase(TestCase):
 
 
 
-def testUserDefined(testClass, testObj):
-    userName = "test_case"
-    word = "word1"
-    meaning = "meaning1"
 
-    alterUserNames = ["test_case2", "test_case3", "test_case4"]
-    alterWords = ["word2", "word3", "word4"]
-    alterMeanings = ["meaning2", "meaning3", "meaning4"]
+class UserDefinedWordDataTestCase(TestCase):
+    def testUserDefinedWord(self):
+        userName = "test_case"
+        word = "word1"
+        meaning = "meaning1"
+        type = UserDefinedWordData.types[0]
 
-    ## add and exists methods
-    testObj.assertFalse(testClass.exists(userName, word))
-    testClass.add(userName, word, meaning)
-    testObj.assertTrue(testClass.exists(userName, word))
+        alterUserNames = ["test_case2", "test_case3", "test_case4"]
+        alterWords = ["word2", "word3", "word4"]
+        alterMeanings = ["meaning2", "meaning3", "meaning4"]
 
-    ## add alternatives
-    for i in range(len(alterUserNames)):
-        for j in range(len(alterWords)):
-                testClass.add(alterUserNames[i], alterWords[j], alterMeanings[j])
-    
-    ## get method
-    objs = testClass.filter(userName, word)
-    testObj.assertEqual(len(objs),1)
-    obj = objs[0]
-    testObj.assertEqual(obj.user, userName)
-    testObj.assertEqual(word, word)
-    testObj.assertEqual(meaning, meaning)
+        ## add and exists methods
+        self.assertFalse(UserDefinedWordData.exists(userName, type, word))
+        UserDefinedWordData.add(userName, type, word, meaning)
+        self.assertTrue(UserDefinedWordData.exists(userName, type, word))
 
-    ## get method 2
-    objs = testClass.filter(userName)
-    testObj.assertEqual(len(objs),1)
+        ## add alternatives
+        for i in range(len(alterUserNames)):
+            for j in range(len(alterWords)):
+                    UserDefinedWordData.add(alterUserNames[i],type, alterWords[j], alterMeanings[j])
+        
+        ## get method
+        objs = UserDefinedWordData.filter(userName, type, word)
+        self.assertEqual(len(objs),1)
+        obj = objs[0]
+        self.assertEqual(obj.user, userName)
+        self.assertEqual(word, word)
+        self.assertEqual(meaning, meaning)
 
-    ## delete method
-    testClass.delete(userName, word)
-    testObj.assertFalse(testClass.exists(userName, word))
+        ## get method 2
+        objs = UserDefinedWordData.filter(userName, type)
+        self.assertEqual(len(objs),1)
 
-    ## get non-exist word
-    objs = testClass.filter(userName, word)
-    testObj.assertEqual(len(objs),0)
+        ## delete method
+        UserDefinedWordData.delete(userName, type, word)
+        self.assertFalse(UserDefinedWordData.exists(userName, type, word))
 
-    ## get non-exist word 2
-    objs = testClass.filter(userName)
-    testObj.assertEqual(len(objs),0)
+        ## get non-exist word
+        objs = UserDefinedWordData.filter(userName, type, word)
+        self.assertEqual(len(objs),0)
 
-    ## detele all words
-    for i in range(len(alterUserNames)):
-        for j in range(len(alterWords)):
-            testClass.delete(alterUserNames[i], alterWords[j])
+        ## get non-exist word 2
+        objs = UserDefinedWordData.filter(userName, type)
+        self.assertEqual(len(objs),0)
 
-
-class UserDefinedWordMeaningTestCase(TestCase):
-    def testUserDefinedWordMeaning(self):
-        testUserDefined(UserDefinedWordMeaning,self)
-
-class UserDefinedWordNoteTestCase(TestCase):
-    def testUserDefinedWordMeaning(self):
-        testUserDefined(UserDefinedWordNote,self)
+        ## detele all words
+        for i in range(len(alterUserNames)):
+            for j in range(len(alterWords)):
+                UserDefinedWordData.delete(alterUserNames[i], type, alterWords[j])
 
 class HistoryTestCase(TestCase):
     def testHistory(self):
@@ -200,7 +194,6 @@ class HistoryTestCase(TestCase):
 
 
 class UserInfoTestCase(TestCase):
-
     def testUserInfo(self):
         userNames = ["test_case", "test_case2", "test_case3", "test_case4"]
         glossaryBooks = ["book1", "book2", "book3", "book4"]

@@ -63,73 +63,46 @@ class GlossaryWords(TimeStampedModel):
             cls.objects.filter(book=book, word=word).delete()
 
 
-class UserDefinedWordMeaning(TimeStampedModel):
+class UserDefinedWordData(TimeStampedModel):
+    types = ['definition', 'note']
     user = models.CharField(max_length=100)
     word = models.CharField(max_length=1000)
-    meaning = models.TextField()
+    type = models.CharField(max_length = 10)
+    data = models.TextField()
     def __str__(self):
-        return f'{self.word}:\n{self.meaning}'
+        return f'{self.word}:{self.type} \n{self.data}'
     
     @classmethod
-    def add(cls, user, word, meaning):
-        cls.objects.create(user=user, word=word, meaning=meaning)
+    def add(cls, user, type, word, data):
+        cls.objects.create(user=user, word=word, type=type, data=data)
     
     @classmethod
-    def exists(cls, user, word):
-        return cls.objects.filter(user=user, word=word).exists()
+    def exists(cls, user, type, word):
+        return cls.objects.filter(user=user, type=type, word=word).exists()
     
     @classmethod
-    def filter(cls, user, word = None):
+    def filter(cls, user, type, word = None):
         if word is None:
-            return cls.objects.filter(user=user)
+            return cls.objects.filter(user=user, type=type)
         else:
-            return cls.objects.filter(user=user, word=word)
+            return cls.objects.filter(user=user, type=type, word=word)
     
     @classmethod
-    def delete(cls, user, word = None):
+    def delete(cls, user, type, word = None):
         if word is None:
-            cls.objects.filter(user=user).delete()
+            cls.objects.filter(user=user, type=type).delete()
         else:
-            cls.objects.filter(user=user, word=word).delete()
+            cls.objects.filter(user=user, type=type, word=word).delete()
 
     class Meta:
         indexes = [
             models.Index(fields=['user', 'word'], name='UDWM_user_word')
         ]
 
-class UserDefinedWordNote(TimeStampedModel):
-    user = models.CharField(max_length=100)
-    word = models.CharField(max_length=1000)
-    note = models.TextField()
-    def __str__(self):
-        return f'{self.word}:\n{self.note}'
-    
-    @classmethod
-    def add(cls, user, word, note):
-        cls.objects.create(user=user, word=word, note=note)
-    
-    @classmethod
-    def exists(cls, user, word):
-        return cls.objects.filter(user=user, word=word).exists()
-    
-    @classmethod
-    def filter(cls, user, word = None):
-        if word is None:
-            return cls.objects.filter(user=user)
-        else:
-            return cls.objects.filter(user=user, word=word)
-        
-    @classmethod
-    def delete(cls, user, word = None):
-        if word is None:
-            cls.objects.filter(user=user).delete()
-        else:
-            cls.objects.filter(user=user, word=word).delete()
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['user', 'word'], name='UDWN_user_word')
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'word', 'type'], name='UDWM_user_word_type')
         ]
+
 
 
 class History(TimeStampedModel):
